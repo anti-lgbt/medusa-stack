@@ -82,6 +82,6 @@ services:
       DATABASE_PORT: 5432
       DATABASE_USER: root
       DATABASE_PASS: changeme
-      DATABASE_NAME: learning
+      DATABASE_NAME: medusa
       REDIS_URL: redis://redis:6379
     command: "./medusa-engine mailer"
