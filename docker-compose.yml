@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.http.routers.traefik-medusa-stack.rule=Host(`traefik.huuhait.net`)"
+      - "traefik.http.services.traefik-medusa-stack.loadbalancer.server.port=8080"
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-medusa-stack.entrypoints=websecure"
+      - "traefik.http.routers.traefik-medusa-stack.tls=true"
+
+  db:
+    image: postgres:13.3
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: changeme
+
+  redis:
+    image: redis:4.0.10
+    restart: always
+    volumes:
+      - ./data/redis:/data
+
+  nats:
+    image: nats
+    restart: always
+
+  medusa-api:
+    image: huuhait/medusa
+    restart: always
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: root
+      DATABASE_PASS: changeme
+      DATABASE_NAME: medusa
+      REDIS_URL: redis://redis:6379
+      NATS_URL: nats://nats:4222
+    volumes:
+      - ./data/uploads:/app/uploads
+    command: "./api"
+    labels:
+      - "traefik.http.routers.medusa-api-medusa-stack.rule=Host(`learn.huuhait.me`) && PathPrefix(`/api`)"
+      - "traefik.http.services.medusa-api-medusa-stack.loadbalancer.server.port=3000"
+      - "traefik.enable=true"
+      - "traefik.http.routers.medusa-api-medusa-stack.entrypoints=websecure"
+      - "traefik.http.routers.medusa-api-medusa-stack.tls=true"
+
+  mailer:
+    image: huuhait/medusa
+    restart: always
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: root
+      DATABASE_PASS: changeme
+      DATABASE_NAME: learning
+      REDIS_URL: redis://redis:6379
+    command: "./cron"
