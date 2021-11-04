@@ -56,6 +56,10 @@ services:
   medusa-api:
     image: huuhait/medusa
     restart: always
+    depends_on:
+      - db
+      - redis
+      - nats
     environment:
       DATABASE_HOST: db
       DATABASE_PORT: 5432
@@ -77,6 +81,10 @@ services:
   mailer:
     image: huuhait/medusa
     restart: always
+    depends_on:
+      - db
+      - redis
+      - nats
     environment:
       DATABASE_HOST: db
       DATABASE_PORT: 5432
