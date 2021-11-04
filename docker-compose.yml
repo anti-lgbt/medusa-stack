@@ -49,7 +49,7 @@ services:
       NATS_URL: nats://nats:4222
     volumes:
       - ./data/uploads:/app/uploads
-    command: "./api"
+    command: "./medusa-api"
     labels:
       - "traefik.http.routers.medusa-api-medusa-stack.rule=Host(`learn.huuhait.me`) && PathPrefix(`/api`)"
       - "traefik.http.services.medusa-api-medusa-stack.loadbalancer.server.port=3000"
@@ -67,4 +67,4 @@ services:
       DATABASE_PASS: changeme
       DATABASE_NAME: learning
       REDIS_URL: redis://redis:6379
-    command: "./cron"
+    command: "./medusa-engine mailer"
