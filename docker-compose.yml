@@ -60,14 +60,8 @@ services:
       - db
       - redis
       - nats
-    environment:
-      DATABASE_HOST: db
-      DATABASE_PORT: 5432
-      DATABASE_USER: root
-      DATABASE_PASS: changeme
-      DATABASE_NAME: medusa
-      REDIS_URL: redis://redis:6379
-      NATS_URL: nats://nats:4222
+    env_file:
+      - ./medusa.env
     volumes:
       - ./data/uploads:/app/uploads
     command: "./medusa-api"
@@ -85,11 +79,6 @@ services:
       - db
       - redis
       - nats
-    environment:
-      DATABASE_HOST: db
-      DATABASE_PORT: 5432
-      DATABASE_USER: root
-      DATABASE_PASS: changeme
-      DATABASE_NAME: medusa
-      REDIS_URL: redis://redis:6379
+    env_file:
+      - ./medusa.env
     command: "./medusa-engine mailer"
